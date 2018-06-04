@@ -5,7 +5,7 @@ from torch.autograd import Variable
 from os.path import isfile, join
 from os import listdir
 from utils import data_transform
-
+import net
     
 
 def compute_errors(model, use_gpu):  
@@ -83,15 +83,14 @@ def compute_errors(model, use_gpu):
     
 
 def main():
-        
-    # loading model
-    print('\nLoading model...')
-    import net
-    model = net.hyb_net()
-    
     # switching to GPU if possible
     use_gpu = torch.cuda.is_available()
-    print('\nusing GPU:', use_gpu)
+    print('\nusing GPU:', use_gpu)    
+
+    
+    # loading model
+    print('\nLoading model...')
+    model = net.hyb_net(use_gpu=use_gpu)
     if use_gpu:
         model = model.cuda()
             

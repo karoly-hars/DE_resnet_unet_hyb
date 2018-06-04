@@ -2,6 +2,7 @@ import torch
 from torch.autograd import Variable
 from utils import load_img, show_img_pred
 import argparse
+import net
 
 
     
@@ -10,15 +11,13 @@ def main():
     parser.add_argument('img_path', type=str,  help='path to the RGB image input')
     args = parser.parse_args()
     
-    # loading model
-    print('\nLoading model...')
-    import net
-    model = net.hyb_net()
-    
-    
     # switching to GPU if possible
     use_gpu = torch.cuda.is_available()
-    print('\nusing GPU:', use_gpu)
+    print('\nusing GPU:', use_gpu)    
+    
+    # loading model
+    print('\nLoading model...')
+    model = net.hyb_net(use_gpu=use_gpu)
     if use_gpu:
         model = model.cuda()
             

@@ -1,5 +1,4 @@
 import torch.nn as nn
-import torch.utils.model_zoo as model_zoo
 import torch
 import os
 
@@ -248,7 +247,7 @@ class ResNetUpProjUnetHyb(nn.Module):
 
 
 
-def hyb_net(load_path='hyb_net_weights.model', **kwargs):
+def hyb_net(load_path='hyb_net_weights.model', use_gpu=False, **kwargs):
     """Constructs a ResNet-50 model.
     Args:
         pretrained (int): 1 download model pretrained on ImageNet, 2 use previously saved model
@@ -260,7 +259,10 @@ def hyb_net(load_path='hyb_net_weights.model', **kwargs):
         os.system("curl https://transfer.sh/Htcjw/hyb_net_weights.model -o {}".format(load_path))
         print('Done.')
             
+    if use_gpu:
+        model.load_state_dict(torch.load(load_path))
+    else:
+        model.load_state_dict(torch.load(load_path, map_location='cpu'))
 
-    model.load_state_dict(torch.load(load_path))
     
     return model

@@ -5,7 +5,7 @@ from torch.autograd import Variable
 import argparse
 import time
 from utils import transform_img, pred_to_gray, scale_and_crop_img
-
+import net
 
 
 def run_vid(model, input_path, use_gpu):
@@ -73,14 +73,13 @@ def main():
     parser.add_argument('input_path', type=str, help='path to the input video')
     args = parser.parse_args()
         
-    # loading model
-    print('\nLoading model...')
-    import net
-    model = net.hyb_net()
-    
     # switching to GPU if possible
     use_gpu = torch.cuda.is_available()
-    print('\nusing GPU:', use_gpu)
+    print('\nusing GPU:', use_gpu)    
+    
+    # loading model
+    print('\nLoading model...')
+    model = net.hyb_net(use_gpu=use_gpu)
     if use_gpu:
         model = model.cuda()
             
