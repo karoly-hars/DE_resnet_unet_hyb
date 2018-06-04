@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import torch
 from torch.autograd import Variable
-import argparse
 from os.path import isfile, join
 from os import listdir
 from utils import data_transform
@@ -84,14 +83,11 @@ def compute_errors(model, use_gpu):
     
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('model_path', type=str, help='path to the trained model')
-    args = parser.parse_args()
         
     # loading model
     print('\nLoading model...')
     import net
-    model = net.hyb_net(pretrained=2, load_path=args.model_path)
+    model = net.hyb_net()
     
     # switching to GPU if possible
     use_gpu = torch.cuda.is_available()

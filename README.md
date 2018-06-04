@@ -22,13 +22,13 @@ A post-print version will be available upon publication, in accordance with Spri
 
 ### Guide
 - Evaluation on the NYU_depth_v2 test set:
-python3 compute_errors.py model/hyb_net_weights.model
+python3 compute_errors.py
 
 - Predicting the depth of an arbitrary image:
-python3 predict_img.py model/hyb_net_weights.model <path_to_image>
+python3 predict_img.py <path_to_image>
 
 - Predicting the depth from a video:
-python3 predict_vid.py model/hyb_net_weights.model <path_to_video>
+python3 predict_vid.py <path_to_video>
 
 
 ### Evalutation
@@ -44,7 +44,7 @@ python3 predict_vid.py model/hyb_net_weights.model <path_to_video>
 
 
 ### Licence
-Copyright 2018, Károly Harsány
+Copyright 2018, Károly Harsányi
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 

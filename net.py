@@ -7,10 +7,6 @@ import os
 __all__ = ['hyb_net']
 
 
-model_url = 'https://download.pytorch.org/models/resnet50-19c8e357.pth'
-
-
-
 def conv3x3(in_planes, out_planes, stride=1):
     "3x3 convolution with padding"
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
@@ -252,30 +248,17 @@ class ResNetUpProjUnetHyb(nn.Module):
 
 
 
-def hyb_net(pretrained=0, load_path='', **kwargs):
+def hyb_net(load_path='hyb_net_weights.model', **kwargs):
     """Constructs a ResNet-50 model.
     Args:
         pretrained (int): 1 download model pretrained on ImageNet, 2 use previously saved model
     """
     model = ResNetUpProjUnetHyb(Bottleneck, [3, 4, 6, 3], **kwargs)
         
-    if pretrained == 1:
-        
-        pretrained_dict = model_zoo.load_url(model_url) 
-        model_dict = model.state_dict()
-        
-        # 1. filter out unnecessary keys
-        pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
-        # 2. overwrite entries in the existing state dict
-        model_dict.update(pretrained_dict) 
-        # 3. load the new state dict
-        model.load_state_dict(model_dict)
-        
-    elif pretrained == 2:
-        if not os.path.exists(load_path):
-            print('Downloading model weights...')
-            os.system("curl https://transfer.sh/Htcjw/hyb_net_weights.model -o {}".format(load_path))
-            print('Done.')
+    if not os.path.exists(load_path):
+        print('Downloading model weights...')
+        os.system("curl https://transfer.sh/Htcjw/hyb_net_weights.model -o {}".format(load_path))
+        print('Done.')
             
 
     model.load_state_dict(torch.load(load_path))

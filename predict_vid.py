@@ -70,14 +70,13 @@ def run_vid(model, input_path, use_gpu):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('model_path', type=str, help='path to the trained model')
     parser.add_argument('input_path', type=str, help='path to the input video')
     args = parser.parse_args()
         
     # loading model
     print('\nLoading model...')
     import net
-    model = net.hyb_net(pretrained=2, load_path=args.model_path)
+    model = net.hyb_net()
     
     # switching to GPU if possible
     use_gpu = torch.cuda.is_available()

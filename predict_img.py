@@ -7,14 +7,13 @@ import argparse
     
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('model_path', type=str, help='path to the trained model')
     parser.add_argument('img_path', type=str,  help='path to the RGB image input')
     args = parser.parse_args()
     
     # loading model
     print('\nLoading model...')
     import net
-    model = net.hyb_net(pretrained=2, load_path=args.model_path)
+    model = net.hyb_net()
     
     
     # switching to GPU if possible
