@@ -5,8 +5,11 @@ This repository contains a CNN trained for single image depth estimation. The ba
 
 ### Paper Describing the Approach:
 Károly Harsányi, Attila Kiss, András Majdik, Tamás Szirányi
+
 A Hybrid CNN Approach for Single Image Depth Estimation: A Case Study
-[IWCIM - 6th International Workshop on Computational Intelligence for Multimedia Understanding](http://iwcim.itu.edu.tr/) (Accepted).
+
+[IWCIM - 6th International Workshop on Computational Intelligence for Multimedia Understanding, 2018](http://iwcim.itu.edu.tr/) (Accepted).
+
 A post-print version will be available upon publication, in accordance with Springer's Consent to Publish Form.
 
 
@@ -23,15 +26,15 @@ A post-print version will be available upon publication, in accordance with Spri
 ### Guide
 - Evaluation on the NYU_depth_v2 test set:
 
-python3 compute_errors.py
+	python3 compute_errors.py
 
 - Predicting the depth of an arbitrary image:
 
-python3 predict_img.py <path_to_image>
+	python3 predict_img.py <path_to_image>
 
 - Predicting the depth from a video:
 
-python3 predict_vid.py <path_to_video>
+	python3 predict_vid.py <path_to_video>
 
 
 ### Evalutation
