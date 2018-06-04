@@ -16,9 +16,7 @@ def run_vid(model, input_path, use_gpu):
     
     capture = cv2.VideoCapture(input_path)
     
-    
     frame_cnt = 0
-    eval_frames = 0
     
     if not capture.isOpened():
             print("Error: Failed to open video.\n")
@@ -26,6 +24,7 @@ def run_vid(model, input_path, use_gpu):
     while (True):
         success, frame = capture.read()
         
+        # stop when finished, or when interrupted by the user
         if not success:
             print('Finished.\n')
             break
@@ -34,33 +33,30 @@ def run_vid(model, input_path, use_gpu):
             print('Interrupted by user.\n')
             break
         
-        frame_cnt += 1
-        # we only evaluate every 2nd frame to predict in real time
-        if frame_cnt % 1 == 0:
-            eval_frames += 1
+        frame_cnt += 1 # count frames for later report
              
-            frame = scale_and_crop_img(frame)
-            img = transform_img(frame)
-            img = torch.Tensor(img)
+        frame = scale_and_crop_img(frame)
+        img = transform_img(frame)
+        img = torch.Tensor(img)
             
-            if use_gpu:
-                img = Variable(img.cuda())
-            else:
-                img = Variable(img)
+        if use_gpu:
+            img = Variable(img.cuda())
+        else:
+            img = Variable(img)
             
-            pred = model(img)
-            pred = pred.cpu()[0].data.numpy()
-            
-            pred = pred_to_gray(pred)
-                        
-            conc = np.concatenate((frame[...,::-1], pred), axis=1)
-            cv2.imshow("video", conc)
+        pred = model(img)
+        pred = pred.cpu()[0].data.numpy()
+          
+        pred = pred_to_gray(pred)
+                      
+        conc = np.concatenate((frame[...,::-1], pred), axis=1)
+        cv2.imshow("video", conc)
             
 
-        
+    # report on number of frames and FPS
     end = time.time()
-    print('\n{} frames evaluated in {}s'.format(int(eval_frames), round(end-start,3)))
-    print('{:.2f} FPS\n'.format(eval_frames/(end-start)))
+    print('\n{} frames evaluated in {}s'.format(int(frame_cnt), round(end-start,3)))
+    print('{:.2f} FPS\n'.format(frame_cnt/(end-start)))
     
     
     capture.release()

@@ -23,11 +23,13 @@ def compute_errors(model, use_gpu):
     # upsampler
     resizer = torch.nn.Upsample(size=(466, 582), mode='bilinear', align_corners=False)
     
-    
+
     preds = np.zeros((466,582,654))
     labels = np.zeros((466,582,654))
     
+
     print('\nRunnning the model on the test set...')
+
     for idx,pair in enumerate(test_files):
         img = cv2.imread(pair[0])[...,::-1]
         label = cv2.imread(pair[1],-1)/6000 # this division is necessary, because the depth values were multiplied by 6000 and saved as uint16 images
@@ -39,6 +41,7 @@ def compute_errors(model, use_gpu):
         # center crop label to output size
         label = label[7:label.shape[0]-7, 29:label.shape[1]-29]
     
+        # load into the labels array
         labels[:,:,idx] = label
     
         img = data_transform(img)
@@ -50,11 +53,12 @@ def compute_errors(model, use_gpu):
         else:
             img = Variable(img)
             
-    
+        # running model and upsampling the prediction
         pred = model(img) 
         pred = resizer(pred)
         pred = pred.cpu().data.numpy()
      
+        # load into the predictions array
         preds[:,:,idx] = pred[0,0,:,:]
         
     

@@ -53,8 +53,8 @@ class Bottleneck(nn.Module):
 
 
 def get_incoming_shape(incoming):
-    """ Returns the incoming data shape """
     size = incoming.size()
+    # returns the incoming data shape as a list
     return [size[0], size[1], size[2], size[3]]
 
 def interleave(tensors, axis):
@@ -137,6 +137,7 @@ class UpProj(nn.Module):
         
         return x
 
+
 class ConConv(nn.Module):
     def __init__(self, inplanes_x1, inplanes_x2, planes):
         super(ConConv, self).__init__()        
@@ -155,6 +156,7 @@ class ResNetUpProjUnetHyb(nn.Module):
         
         self.inplanes = 64
         
+        ''' layers of the resnet50 '''
         super(ResNetUpProjUnetHyb, self).__init__()
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
@@ -250,7 +252,8 @@ class ResNetUpProjUnetHyb(nn.Module):
 def hyb_net(load_path='hyb_net_weights.model', use_gpu=False, **kwargs):
 
     model = ResNetUpProjUnetHyb(Bottleneck, [3, 4, 6, 3], **kwargs)
-        
+    
+    # download the weight in case they are not present
     if not os.path.exists(load_path):
         print('Downloading model weights...')
         os.system("curl https://transfer.sh/Htcjw/hyb_net_weights.model -o {}".format(load_path))
