@@ -248,10 +248,7 @@ class ResNetUpProjUnetHyb(nn.Module):
 
 
 def hyb_net(load_path='hyb_net_weights.model', use_gpu=False, **kwargs):
-    """Constructs a ResNet-50 model.
-    Args:
-        pretrained (int): 1 download model pretrained on ImageNet, 2 use previously saved model
-    """
+
     model = ResNetUpProjUnetHyb(Bottleneck, [3, 4, 6, 3], **kwargs)
         
     if not os.path.exists(load_path):
