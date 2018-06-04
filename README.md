@@ -22,12 +22,15 @@ A post-print version will be available upon publication, in accordance with Spri
 
 ### Guide
 - Evaluation on the NYU_depth_v2 test set:
+
 python3 compute_errors.py
 
 - Predicting the depth of an arbitrary image:
+
 python3 predict_img.py <path_to_image>
 
 - Predicting the depth from a video:
+
 python3 predict_vid.py <path_to_video>
 
 
