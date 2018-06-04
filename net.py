@@ -261,5 +261,4 @@ def hyb_net(load_path='hyb_net_weights.model', use_gpu=False, **kwargs):
     else:
         model.load_state_dict(torch.load(load_path, map_location='cpu'))
 
-    
     return model

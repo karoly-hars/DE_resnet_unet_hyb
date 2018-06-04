@@ -27,7 +27,7 @@ def run_vid(model, input_path, use_gpu):
         success, frame = capture.read()
         
         if not success:
-            print('Video ended.\n')
+            print('Finished.\n')
             break
             
         if cv2.waitKey(1) == ord('q'):
