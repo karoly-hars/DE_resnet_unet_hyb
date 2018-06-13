@@ -25,6 +25,7 @@ def main():
     model.eval()
         
     # reading image
+    print('\nLoading and running image...')
     img = load_img(args.img_path)
     
     # running model on the image
