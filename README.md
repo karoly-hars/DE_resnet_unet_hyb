@@ -17,7 +17,6 @@ A post-print version will be available upon publication, in accordance with Spri
 - opencv
 - matplotlib
 - numpy
-- curl
 
 
 ### Guide
