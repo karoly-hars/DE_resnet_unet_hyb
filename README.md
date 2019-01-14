@@ -4,11 +4,9 @@ This repository contains a CNN trained for single image depth estimation. The ba
 
 
 ### Paper Describing the Approach:
-Károly Harsányi, Attila Kiss, András Majdik, Tamás Szirányi: 
-A Hybrid CNN Approach for Single Image Depth Estimation: A Case Study.
-[IWCIM - 6th International Workshop on Computational Intelligence for Multimedia Understanding, 2018](http://iwcim.itu.edu.tr/) (Accepted).
-A post-print version will be available upon publication, in accordance with Springer's Consent to Publish Form.
-
+[Károly Harsányi, Attila Kiss, András Majdik, Tamás Szirányi: 
+A Hybrid CNN Approach for Single Image Depth Estimation: A Case Study.](http://link-springer-com-s.vpn.whu.edu.cn:9440/chapter/10.1007/978-3-319-98678-4_38)
+IWCIM - 6th International Workshop on Computational Intelligence for Multimedia Understanding, 2018
 
 ### Requirements
 - python 3.5 or 3.6
