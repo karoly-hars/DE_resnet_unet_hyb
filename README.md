@@ -43,7 +43,7 @@ python3 predict_vid.py <path_to_video>
 
 
 ### Acknowledgments
-The most of the code for the ResNet50 architecture comes from [pytorch/vision](https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py) and a few lines of code is borrowed from [FCRN-DepthPrediction](https://github.com/iro-cp/FCRN-DepthPrediction).
+Most of the code for the ResNet50 architecture comes from [pytorch/vision](https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py) and a few lines of code is borrowed from [FCRN-DepthPrediction](https://github.com/iro-cp/FCRN-DepthPrediction).
 
 
 ### Licence

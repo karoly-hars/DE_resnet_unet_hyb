@@ -5,7 +5,6 @@ import argparse
 import net
 
 
-    
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('img_path', type=str,  help='path to the RGB image input')
@@ -17,11 +16,11 @@ def main():
     
     # loading model
     print('\nLoading model...')
-    model = net.hyb_net(use_gpu=use_gpu)
+    model = net.load_model(use_gpu=use_gpu)
     if use_gpu:
         model = model.cuda()
             
-    # setting model to evalutation mode
+    # setting model to evaluation mode
     model.eval()
         
     # reading image
@@ -35,14 +34,11 @@ def main():
         img = Variable(img)
     output = model(img)
     
-    # transforming and ploting the results
+    # transforming and plotting the results
     output = output.cpu()[0].data.numpy()
     img = img.cpu()[0].data.numpy()
     show_img_pred(img, output)
     
-    
 
 if __name__ == "__main__":
     main()
-
-

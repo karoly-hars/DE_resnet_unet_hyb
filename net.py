@@ -7,10 +7,8 @@ __all__ = ['hyb_net']
 
 
 def conv3x3(in_planes, out_planes, stride=1):
-    "3x3 convolution with padding"
-    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=1, bias=False)
-
+    # 3x3 convolution with padding
+    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
 
 
 class Bottleneck(nn.Module):
@@ -51,11 +49,11 @@ class Bottleneck(nn.Module):
         return out
       
 
-
 def get_incoming_shape(incoming):
     size = incoming.size()
     # returns the incoming data shape as a list
     return [size[0], size[1], size[2], size[3]]
+
 
 def interleave(tensors, axis):
     # change the first element (batch_size to -1)
@@ -73,44 +71,40 @@ def interleave(tensors, axis):
     return reshaped
 
 
-        
-class UnPool_as_Conv(nn.Module):       
+class UnpoolingAsConvolution(nn.Module):
     def __init__(self, inplanes, planes):
-        super(UnPool_as_Conv, self).__init__()
-        
+        super(UnpoolingAsConvolution, self).__init__()
+
         # interleaving convolutions
-        self.conv_A = nn.Conv2d(in_channels = inplanes, out_channels = planes, kernel_size = (3,3), stride = 1, padding = 1)
-        self.conv_B = nn.Conv2d(in_channels = inplanes, out_channels = planes, kernel_size = (2,3), stride = 1, padding = 0)
-        self.conv_C = nn.Conv2d(in_channels = inplanes, out_channels = planes, kernel_size = (3,2), stride = 1, padding = 0)
-        self.conv_D = nn.Conv2d(in_channels = inplanes, out_channels = planes, kernel_size = (2,2), stride = 1, padding = 0)
-        
-        
-    def forward(self,x):
-        output_A = self.conv_A(x)
-        
-        padded_B = nn.functional.pad(x, (1,1,0,1))
-        output_B = self.conv_B(padded_B)
-        
-        padded_C = nn.functional.pad(x, (0,1,1,1))
-        output_C = self.conv_C(padded_C)
-        
-        padded_D = nn.functional.pad(x, (0,1,0,1))
-        output_D = self.conv_D(padded_D)       
-        
-        left = interleave([output_A, output_B], axis = 2)
-        right = interleave([output_C, output_D], axis = 2)
-        Y = interleave([left, right], axis = 3)
-                
-        return Y
+        self.conv_A = nn.Conv2d(in_channels=inplanes, out_channels=planes, kernel_size=(3, 3), stride=1, padding=1)
+        self.conv_B = nn.Conv2d(in_channels=inplanes, out_channels=planes, kernel_size=(2, 3), stride=1, padding=0)
+        self.conv_C = nn.Conv2d(in_channels=inplanes, out_channels=planes, kernel_size=(3, 2), stride=1, padding=0)
+        self.conv_D = nn.Conv2d(in_channels=inplanes, out_channels=planes, kernel_size=(2, 2), stride=1, padding=0)
+
+    def forward(self, x):
+        output_a = self.conv_A(x)
+
+        padded_b = nn.functional.pad(x, (1, 1, 0, 1))
+        output_b = self.conv_B(padded_b)
+
+        padded_c = nn.functional.pad(x, (0, 1, 1, 1))
+        output_c = self.conv_C(padded_c)
+
+        padded_d = nn.functional.pad(x, (0, 1, 0, 1))
+        output_d = self.conv_D(padded_d)
+
+        left = interleave([output_a, output_b], axis=2)
+        right = interleave([output_c, output_d], axis=2)
+        y = interleave([left, right], axis=3)
+        return y
 
 
-
-class UpProj(nn.Module):  
+class UpProjection(nn.Module):
     def __init__(self, inplanes, planes):
-        super(UpProj, self).__init__()        
+        super(UpProjection, self).__init__()
         
-        self.unpool_main = UnPool_as_Conv(inplanes, planes)
-        self.unpool_res = UnPool_as_Conv(inplanes, planes)
+        self.unpool_main = UnpoolingAsConvolution(inplanes, planes)
+        self.unpool_res = UnpoolingAsConvolution(inplanes, planes)
              
         self.main_branch = nn.Sequential(
             self.unpool_main,
@@ -126,15 +120,12 @@ class UpProj(nn.Module):
         )
 
         self.relu = nn.ReLU(inplace=False)       
-        
-        
+
     def forward(self, input_data):
-        
         x = self.main_branch(input_data)
         res = self.residual_branch(input_data)             
         x += res  
         x = self.relu(x)
-        
         return x
 
 
@@ -149,15 +140,14 @@ class ConConv(nn.Module):
         return x1
 
 
-
-class ResNetUpProjUnetHyb(nn.Module):
+class ResnetUnetHybrid(nn.Module):
  
     def __init__(self, block, layers):
         
         self.inplanes = 64
         
-        ''' layers of the resnet50 '''
-        super(ResNetUpProjUnetHyb, self).__init__()
+        # resnet layers
+        super(ResnetUnetHybrid, self).__init__()
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
@@ -167,16 +157,15 @@ class ResNetUpProjUnetHyb(nn.Module):
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
-               
-        
-        ''' additional up projection layers parts '''
+
+        # additional up projection layers parts
         self.conv2 = nn.Conv2d(2048, 1024, 1, bias=True)
         self.bn2 = nn.BatchNorm2d(1024)
         
-        self.up_proj1 = UpProj(1024, 512)
-        self.up_proj2 = UpProj(512, 256)
-        self.up_proj3 = UpProj(256, 128)
-        self.up_proj4 = UpProj(128, 64)
+        self.up_proj1 = UpProjection(1024, 512)
+        self.up_proj2 = UpProjection(512, 256)
+        self.up_proj3 = UpProjection(256, 128)
+        self.up_proj4 = UpProjection(128, 64)
         
         self.drop = nn.Dropout(0.5, False)
         self.conv3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1, bias=True)
@@ -186,8 +175,7 @@ class ResNetUpProjUnetHyb(nn.Module):
         self.con_conv2 = ConConv(512, 256, 256) 
         self.con_conv3 = ConConv(256, 128, 128) 
         self.con_conv4 = ConConv(64, 64, 64) 
-        
-        
+
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.normal_(m.weight, 0, 0.01)
@@ -205,7 +193,7 @@ class ResNetUpProjUnetHyb(nn.Module):
                 nn.BatchNorm2d(planes * block.expansion),
             )
 
-        layers = []
+        layers = list()
         layers.append(block(self.inplanes, planes, stride, downsample))
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
@@ -248,10 +236,9 @@ class ResNetUpProjUnetHyb(nn.Module):
         return x
 
 
+def load_model(load_path='hyb_net_weights.model', use_gpu=False):
 
-def hyb_net(load_path='hyb_net_weights.model', use_gpu=False, **kwargs):
-
-    model = ResNetUpProjUnetHyb(Bottleneck, [3, 4, 6, 3], **kwargs)
+    model = ResnetUnetHybrid(Bottleneck, [3, 4, 6, 3])
     
     # download the weight in case they are not present
     if not os.path.exists(load_path):

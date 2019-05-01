@@ -9,21 +9,17 @@ import net
 
 
 def run_vid(model, input_path, use_gpu):
-    # capture video and run video
+    # capture and run video
     print('\nRunning video...')
-    
     start = time.time()
-    
     capture = cv2.VideoCapture(input_path)
-    
     frame_cnt = 0
     
     if not capture.isOpened():
-            print("Error: Failed to open video.\n")
+        print("Error: Failed to open video.\n")
 
-    while (True):
+    while True:
         success, frame = capture.read()
-        
         # stop when finished, or when interrupted by the user
         if not success:
             print('Finished.\n')
@@ -33,8 +29,7 @@ def run_vid(model, input_path, use_gpu):
             print('Interrupted by user.\n')
             break
         
-        frame_cnt += 1 # count frames for later report
-             
+        frame_cnt += 1  # count frames for later report
         frame = scale_and_crop_img(frame)
         img = transform_img(frame)
         img = torch.Tensor(img)
@@ -49,19 +44,15 @@ def run_vid(model, input_path, use_gpu):
           
         pred = pred_to_gray(pred)
                       
-        conc = np.concatenate((frame[...,::-1], pred), axis=1)
+        conc = np.concatenate((frame[..., ::-1], pred), axis=1)
         cv2.imshow("video", conc)
-            
 
-    # report on number of frames and FPS
     end = time.time()
-    print('\n{} frames evaluated in {}s'.format(int(frame_cnt), round(end-start,3)))
+    print('\n{} frames evaluated in {}s'.format(int(frame_cnt), round(end-start, 3)))
     print('{:.2f} FPS\n'.format(frame_cnt/(end-start)))
-    
-    
+
     capture.release()
     cv2.destroyAllWindows()
-    
 
 
 def main():
@@ -75,16 +66,15 @@ def main():
     
     # loading model
     print('\nLoading model...')
-    model = net.hyb_net(use_gpu=use_gpu)
+    model = net.load_model(use_gpu=use_gpu)
     if use_gpu:
         model = model.cuda()
             
-    # setting model to evalutation mode
+    # setting model to evaluation mode
     model.eval()
     
-    run_vid( model, args.input_path, use_gpu)
+    run_vid(model, args.input_path, use_gpu)
     
-     
-   
+
 if __name__ == "__main__":
     main()
