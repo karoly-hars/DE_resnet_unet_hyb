@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import torch
-import torch.nn as nn
+import torch.nn.functional as F
 from torch.autograd import Variable
 from os.path import isfile, join
 from os import listdir
@@ -51,7 +51,7 @@ def compute_errors(model, use_gpu):
         # running model and upsampling the prediction
         pred = model(img)
         # upsampling
-        pred = nn.functional.interpolate(pred, size=(466, 582), mode='bilinear', align_corners=False)
+        pred = F.interpolate(pred, size=(466, 582), mode='bilinear', align_corners=False)
         pred = pred.cpu().data.numpy()
      
         # load into the predictions array
