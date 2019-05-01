@@ -11,11 +11,11 @@ import net
 
 def compute_errors(model, use_gpu):
     # loading test images
-    test_dir = 'NYU_depth_v2_test_set'
+    test_dir = "NYU_depth_v2_test_set"
     test_img_paths = [join(test_dir, f) for f in listdir(test_dir)
-                      if isfile(join(test_dir, f)) and f.endswith('_rgb.png')]
+                      if isfile(join(test_dir, f)) and f.endswith("_rgb.png")]
     test_label_paths = [join(test_dir, f) for f in listdir(test_dir)
-                        if isfile(join(test_dir, f)) and f.endswith('_dpth.png')]
+                        if isfile(join(test_dir, f)) and f.endswith("_dpth.png")]
     test_img_paths.sort()
     test_label_paths.sort()
     test_files = [[x, y] for (x, y) in zip(test_img_paths, test_label_paths)]
@@ -23,7 +23,7 @@ def compute_errors(model, use_gpu):
     preds = np.zeros((466, 582, 654))
     labels = np.zeros((466, 582, 654))
 
-    print('\nRunning the model on the test set...')
+    print("\nRunning the model on the test set...")
     for idx, pair in enumerate(test_files):
         img = cv2.imread(pair[0])[..., ::-1]
         # this division is necessary, because the depth values were multiplied by 6000 and saved as 16 bit images
@@ -51,7 +51,7 @@ def compute_errors(model, use_gpu):
         # running model and upsampling the prediction
         pred = model(img)
         # upsampling
-        pred = F.interpolate(pred, size=(466, 582), mode='bilinear', align_corners=False)
+        pred = F.interpolate(pred, size=(466, 582), mode="bilinear", align_corners=False)
         pred = pred.cpu().data.numpy()
      
         # load into the predictions array
@@ -59,32 +59,32 @@ def compute_errors(model, use_gpu):
 
     # calculating errors
     rel_error = np.mean(np.abs(preds - labels)/labels)
-    print('\nMean Absolute Relative Error: {:.6f}'.format(rel_error))
+    print("\nMean Absolute Relative Error: {:.6f}".format(rel_error))
     
     rmse = np.sqrt(np.mean((preds - labels)**2))
-    print('Root Mean Squared Error: {:.6f}'.format(rmse))
+    print("Root Mean Squared Error: {:.6f}".format(rmse))
     
     log10 = np.mean(np.abs(np.log10(preds) - np.log10(labels)))
-    print('Mean Log10 Error: {:.6f}'.format(log10))
+    print("Mean Log10 Error: {:.6f}".format(log10))
     
     acc = np.maximum(preds/labels, labels/preds)
     delta1 = np.mean(acc < 1.25)
-    print('Delta1: {:.6f}'.format(delta1))
+    print("Delta1: {:.6f}".format(delta1))
     
     delta2 = np.mean(acc < 1.25**2)
-    print('Delta2: {:.6f}'.format(delta2))
+    print("Delta2: {:.6f}".format(delta2))
     
     delta3 = np.mean(acc < 1.25**3)
-    print('Delta3: {:.6f}'.format(delta3))    
+    print("Delta3: {:.6f}".format(delta3))    
     
 
 def main():
     # switching to GPU if possible
     use_gpu = torch.cuda.is_available()
-    print('\nusing GPU:', use_gpu)    
+    print("\nusing GPU:", use_gpu)    
 
     # loading model
-    print('\nLoading model...')
+    print("\nLoading model...")
     model = net.load_model(use_gpu=use_gpu)
     if use_gpu:
         model = model.cuda()

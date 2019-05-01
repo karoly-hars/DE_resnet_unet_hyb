@@ -7,15 +7,15 @@ import net
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('img_path', type=str,  help='path to the RGB image input')
+    parser.add_argument("img_path", type=str,  help="path to the RGB image input")
     args = parser.parse_args()
     
     # switching to GPU if possible
     use_gpu = torch.cuda.is_available()
-    print('\nusing GPU:', use_gpu)    
+    print("\nusing GPU:", use_gpu)    
     
     # loading model
-    print('\nLoading model...')
+    print("\nLoading model...")
     model = net.load_model(use_gpu=use_gpu)
     if use_gpu:
         model = model.cuda()
@@ -24,7 +24,7 @@ def main():
     model.eval()
         
     # reading image
-    print('\nLoading and running image...')
+    print("\nLoading and running image...")
     img = load_img(args.img_path)
     
     # running model on the image

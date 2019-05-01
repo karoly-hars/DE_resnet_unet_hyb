@@ -3,7 +3,7 @@ import torch
 import os
 
 
-__all__ = ['hyb_net']
+__all__ = ["hyb_net"]
 
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -170,7 +170,7 @@ class ResnetUnetHybrid(nn.Module):
         self.drop = nn.Dropout(0.5, False)
         self.conv3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1, bias=True)
         
-        ''' padding + concat for unet stuff '''
+        # padding + concat for unet stuff
         self.con_conv1 = ConConv(1024, 512, 512)
         self.con_conv2 = ConConv(512, 256, 256) 
         self.con_conv3 = ConConv(256, 128, 128) 
@@ -212,11 +212,11 @@ class ResnetUnetHybrid(nn.Module):
         x_to_conv1 = self.layer3(x_to_conv2)
         x = self.layer4(x_to_conv1)
           
-        ''' additional layers '''
+        # additional layers
         x = self.conv2(x)
         x = self.bn2(x)
         
-        ''' up project part'''
+        # up project part
         x = self.up_proj1(x)
         x = self.con_conv1(x, x_to_conv1)
         
@@ -236,19 +236,19 @@ class ResnetUnetHybrid(nn.Module):
         return x
 
 
-def load_model(load_path='hyb_net_weights.model', use_gpu=False):
+def load_model(load_path="hyb_net_weights.model", use_gpu=False):
 
     model = ResnetUnetHybrid(Bottleneck, [3, 4, 6, 3])
     
     # download the weight in case they are not present
     if not os.path.exists(load_path):
-        print('Downloading model weights...')
+        print("Downloading model weights...")
         os.system("wget https://www.dropbox.com/s/amad4ko9opi4kts/hyb_net_weights.model")
-        print('Done.')
+        print("Done.")
             
     if use_gpu:
         model.load_state_dict(torch.load(load_path))
     else:
-        model.load_state_dict(torch.load(load_path, map_location='cpu'))
+        model.load_state_dict(torch.load(load_path, map_location="cpu"))
 
     return model
