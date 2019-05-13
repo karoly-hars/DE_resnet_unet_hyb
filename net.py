@@ -141,9 +141,7 @@ class ConConv(nn.Module):
 
 
 class ResnetUnetHybrid(nn.Module):
- 
     def __init__(self, block, layers):
-        
         self.inplanes = 64
         
         # resnet layers
@@ -237,7 +235,6 @@ class ResnetUnetHybrid(nn.Module):
 
 
 def load_model(load_path="hyb_net_weights.model", use_gpu=False):
-
     model = ResnetUnetHybrid(Bottleneck, [3, 4, 6, 3])
     
     # download the weight in case they are not present

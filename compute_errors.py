@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import torch
 import torch.nn.functional as F
-from torch.autograd import Variable
 from os.path import isfile, join
 from os import listdir
 from utils import data_transform
@@ -44,9 +43,7 @@ def compute_errors(model, use_gpu):
         
         # running model on the image
         if use_gpu:
-            img = Variable(img.cuda())
-        else:
-            img = Variable(img)
+            img = img.cuda()
             
         # running model and upsampling the prediction
         pred = model(img)

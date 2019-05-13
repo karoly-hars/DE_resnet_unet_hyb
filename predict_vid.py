@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import torch
-from torch.autograd import Variable
 import argparse
 import time
 from utils import transform_img, pred_to_gray, scale_and_crop_img
@@ -35,9 +34,7 @@ def run_vid(model, input_path, use_gpu):
         img = torch.Tensor(img)
             
         if use_gpu:
-            img = Variable(img.cuda())
-        else:
-            img = Variable(img)
+            img = img.cuda()
             
         pred = model(img)
         pred = pred.cpu()[0].data.numpy()

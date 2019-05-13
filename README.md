@@ -11,7 +11,7 @@ IWCIM - 6th International Workshop on Computational Intelligence for Multimedia 
 ### Requirements
 The code was tested with:
 - python 3.5 and 3.6
-- pytorch (and torchvision) 0.4 to 1.0.0
+- pytorch (and torchvision) 1.0.0
 - opencv-python 3.4.3
 - matplotlib 2.2.3
 - numpy 1.15.4
