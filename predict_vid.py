@@ -52,15 +52,15 @@ def run_vid(model, input_path, use_gpu):
     cv2.destroyAllWindows()
 
 
-def parse_args():
+def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("input_path", type=str, help="path to the input video")
     return parser.parse_args()
 
 
 def main():
-    args = parse_args()
-
+    args = get_arguments()
+    
     # switching to GPU if possible
     use_gpu = torch.cuda.is_available()
     print("\nusing GPU:", use_gpu)    
