@@ -19,8 +19,8 @@ def compute_errors(model, use_gpu):
     test_label_paths.sort()
     test_files = [[x, y] for (x, y) in zip(test_img_paths, test_label_paths)]
 
-    preds = np.zeros((466, 582, 654))
-    labels = np.zeros((466, 582, 654))
+    preds = np.zeros((466, 582, 654), dtype=np.float32)
+    labels = np.zeros((466, 582, 654), dtype=np.float32)
 
     print("\nRunning the model on the test set...")
     for idx, pair in enumerate(test_files):
