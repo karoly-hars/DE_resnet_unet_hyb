@@ -1,35 +1,33 @@
 import torch
-from utils import load_img, show_img_pred
 import argparse
 from network import ResnetUnetHybrid
+import image_utils
 
 
 def predict_img(img_path): 
-    # switching to GPU if possible
+    # switch to GPU if possible
     use_gpu = torch.cuda.is_available()
     print('Using GPU:', use_gpu)    
     
-    # loading model
+    # load model
     print('Loading model...')
     model = ResnetUnetHybrid.load_pretrained(use_gpu=use_gpu)
-            
-    # setting model to evaluation mode
     model.eval()
         
-    # reading image
-    print('Inferencing image...')
-    img = load_img(img_path)
-    
-    # running model on the image
+    # load image
+    print('Running the image through the network...')
+    img = image_utils.load_standalone_image(img_path)
+
+    # inference
     if use_gpu:
         img = img.cuda()
 
     output = model(img)
     
-    # transforming and plotting the results
+    # transform and plot the results
     output = output.cpu()[0].data.numpy()
     img = img.cpu()[0].data.numpy()
-    show_img_pred(img, output)
+    image_utils.show_img_and_pred(img, output)
     
 
 def get_arguments():

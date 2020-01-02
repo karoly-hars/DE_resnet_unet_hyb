@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import argparse
 import time
-from utils import transform_img, pred_to_gray, scale_and_crop_img
+import image_utils
 from network import ResnetUnetHybrid
 
 
@@ -29,21 +29,25 @@ def run_vid(model, input_path, use_gpu):
             print('Interrupted by user.')
             break
         
-        frame_cnt += 1  # count frames for later report
-        frame = scale_and_crop_img(frame)
-        img = transform_img(frame)
-        img = torch.Tensor(img)
-            
+        frame_cnt += 1
+
+        frame = frame[..., ::-1]
+        frame = image_utils.scale_image(frame)
+        frame = image_utils.center_crop(frame)
+        inp_img = image_utils.img_transform(frame)
+        inp_img = inp_img[None, :, :, :]
+
         if use_gpu:
-            img = img.cuda()
+            inp_img = inp_img.cuda()
             
-        pred = model(img)
+        pred = model(inp_img)
+
+        # post-process prediction
         pred = pred.cpu()[0].data.numpy()
-          
-        pred = pred_to_gray(pred)
-                      
-        conc = np.concatenate((frame[..., ::-1], pred), axis=1)
-        cv2.imshow('video', conc)
+        pred = image_utils.depth_image_to_grayscale(pred)
+
+        # concatenate the input frame with the prediction and display
+        cv2.imshow('video', np.concatenate((frame[..., ::-1], pred), axis=1))
 
     end = time.time()
     print('\n{} frames evaluated in {}s'.format(int(frame_cnt), round(end-start, 3)))
