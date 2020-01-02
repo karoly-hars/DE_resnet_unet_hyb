@@ -30,8 +30,8 @@ def collect_test_files(download_path='./NYU_depth_v2_test_set.tar.gz'):
 
 
 def compute_errors(model, use_gpu):
-    preds = np.zeros((466, 582, 654), dtype=np.float16)
-    labels = np.zeros((466, 582, 654), dtype=np.float16)
+    preds = np.zeros((466, 582, 654), dtype=np.float32)
+    labels = np.zeros((466, 582, 654), dtype=np.float32)
 
     print("Downloading and extracting test set...")
     test_img_paths, test_label_paths = collect_test_files()
