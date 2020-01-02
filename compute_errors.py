@@ -33,7 +33,7 @@ def compute_errors(model, use_gpu):
     preds = np.zeros((466, 582, 654), dtype=np.float32)
     labels = np.zeros((466, 582, 654), dtype=np.float32)
 
-    print("Downloading and extracting test set...")
+    print('Downloading and extracting test set...')
     test_img_paths, test_label_paths = collect_test_files()
 
     print('\nRunning evaluation:')
@@ -94,7 +94,7 @@ def compute_errors(model, use_gpu):
 def main():
     # switching to GPU if possible
     use_gpu = torch.cuda.is_available()
-    print('\nusing GPU:', use_gpu)    
+    print('Using GPU:', use_gpu)
 
     # loading model
     print('\nLoading model...')
