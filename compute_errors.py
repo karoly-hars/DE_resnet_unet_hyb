@@ -5,7 +5,7 @@ import torch
 import torch.nn.functional as F
 import os
 from utils import data_transform
-import net
+from network import ResnetUnetHybrid
 import tarfile
 
 
@@ -98,9 +98,7 @@ def main():
 
     # loading model
     print('\nLoading model...')
-    model = net.load_model(use_gpu=use_gpu)
-    if use_gpu:
-        model = model.cuda()
+    model = ResnetUnetHybrid.load_pretrained(use_gpu=use_gpu)
             
     # setting model to evaluation mode
     model.eval()
