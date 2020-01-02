@@ -238,7 +238,6 @@ def load_model(load_path="hyb_net_weights.model", use_gpu=False):
     if not os.path.exists(load_path):
         print("Downloading model weights...")
         os.system("wget https://www.dropbox.com/s/amad4ko9opi4kts/hyb_net_weights.model")
-        print("Done.")
             
     if use_gpu:
         model.load_state_dict(torch.load(load_path))
