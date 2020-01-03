@@ -34,13 +34,12 @@ def run_vid(model, input_path, use_gpu):
         frame = frame[..., ::-1]
         frame = image_utils.scale_image(frame)
         frame = image_utils.center_crop(frame)
-        inp_img = image_utils.img_transform(frame)
-        inp_img = inp_img[None, :, :, :]
-
+        inp = image_utils.img_transform(frame)
+        inp = inp[None, :, :, :]
         if use_gpu:
-            inp_img = inp_img.cuda()
+            inp = inp.cuda()
             
-        pred = model(inp_img)
+        pred = model(inp)
 
         # post-process prediction
         pred = pred.cpu()[0].data.numpy()

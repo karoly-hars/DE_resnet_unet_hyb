@@ -1,5 +1,6 @@
-import torch
 import argparse
+import cv2
+import torch
 from network import ResnetUnetHybrid
 import image_utils
 
@@ -15,18 +16,20 @@ def predict_img(img_path):
     model.eval()
         
     # load image
-    print('Running the image through the network...')
-    img = image_utils.load_standalone_image(img_path)
+    img = cv2.imread(img_path)[..., ::-1]
+    img = image_utils.scale_image(img)
+    img = image_utils.center_crop(img)
+    inp = image_utils.img_transform(img)
+    inp = inp[None, :, :, :]
+    if use_gpu:
+        inp = inp.cuda()
 
     # inference
-    if use_gpu:
-        img = img.cuda()
-
-    output = model(img)
+    print('Running the image through the network...')
+    output = model(inp)
     
     # transform and plot the results
     output = output.cpu()[0].data.numpy()
-    img = img.cpu()[0].data.numpy()
     image_utils.show_img_and_pred(img, output)
     
 

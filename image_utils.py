@@ -4,7 +4,13 @@ import cv2
 import math
 import matplotlib.pyplot as plt
 from torchvision import transforms
-from dataset import HEIGHT, WIDTH
+
+
+HEIGHT = 256
+WIDTH = 320
+
+OUT_WIDTH = 160
+OUT_HEIGHT = 128
 
 
 def random_scale_image_end_depth(image, depth):
@@ -79,39 +85,15 @@ def depth_transform(depth):
     return depth
 
 
-def load_standalone_image(img_path):
-    img = cv2.imread(img_path)[..., ::-1]
-    img = preprocess_standalone_image(img)
-    return img
-
-
-def preprocess_standalone_image(img):
-    img = scale_image(img)
-    img = center_crop(img)
-    img = img_transform(img)
-    img = img[None, :, :, :]
-    return img
-
-
 def show_img_and_pred(img, pred):
     plt.figure()
     plt.subplot(1, 2, 1)
-    img = postprocess_image(img)
     plt.imshow(img)
 
     plt.subplot(1, 2, 2)
     pred = np.transpose(pred, (1, 2, 0))
     plt.imshow(pred[:, :, 0])
     plt.show()
-
-
-def postprocess_image(img):
-    img = np.transpose(img, (1, 2, 0))
-    mean = np.array([0.485, 0.456, 0.406])
-    std = np.array([0.229, 0.224, 0.225])
-    img = (std * img + mean)
-    img = np.clip(img, 0, 1)
-    return img
 
 
 def depth_image_to_grayscale(depth, max_dist=10.0):
