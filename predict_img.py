@@ -5,7 +5,8 @@ from network import ResnetUnetHybrid
 import image_utils
 
 
-def predict_img(img_path): 
+def predict_img(img_path):
+    """Inference a single image."""
     # switch to GPU if possible
     use_gpu = torch.cuda.is_available()
     print('Using GPU:', use_gpu)    
@@ -34,8 +35,9 @@ def predict_img(img_path):
     
 
 def get_arguments():
+    """Get command line arguments."""
     parser = argparse.ArgumentParser()
-    parser.add_argument('img_path', type=str,  help='path to the RGB image input')
+    parser.add_argument('-i', '--img_path', required=True, type=str, help='Path to the input image.')
     return parser.parse_args()
 
 

@@ -10,6 +10,7 @@ import image_utils
 
 
 def collect_test_files(download_path='./NYU_depth_v2_test_set.tar.gz'):
+    """Download the test subset, uncompress and return the image and label paths."""
     # download tar from Dropbox
     if not os.path.exists(download_path):
         print('Downloading test set...')
@@ -33,29 +34,17 @@ def collect_test_files(download_path='./NYU_depth_v2_test_set.tar.gz'):
     return test_img_paths, test_label_paths
 
 
-def load_and_inference_image(model, use_gpu, img_path):
-    # load image
-    img = cv2.imread(img_path)[..., ::-1]
+def compute_errors():
+    """Download the test files, run all the test images through the model, and evaluate."""
+    # switch to GPU if possible
+    use_gpu = torch.cuda.is_available()
+    print('Using GPU:', use_gpu)
 
-    # resize and center crop to input size
-    img = image_utils.scale_image(img, 0.55)
-    img = image_utils.center_crop(img)
-    img = image_utils.img_transform(img)
-    img = img[None, :, :, :]
-    if use_gpu:
-        img = img.cuda()
+    # load model
+    print('\nLoading model...')
+    model = ResnetUnetHybrid.load_pretrained(use_gpu=use_gpu)
+    model.eval()
 
-    # inference
-    pred = model(img)
-
-    # up-sampling
-    pred = F.interpolate(pred, size=(466, 582), mode='bilinear', align_corners=False)
-    pred = pred.cpu().data.numpy()
-
-    return pred
-
-
-def compute_errors(model, use_gpu):
     preds = np.zeros((466, 582, 654), dtype=np.float32)
     labels = np.zeros((466, 582, 654), dtype=np.float32)
 
@@ -66,8 +55,23 @@ def compute_errors(model, use_gpu):
         sys.stdout.write('\r{} / {}'.format(idx, len(test_img_paths)))
         sys.stdout.flush()
 
-        # load the image and run it through the network
-        pred = load_and_inference_image(model, use_gpu, img_path)
+        # load image
+        img = cv2.imread(img_path)[..., ::-1]
+
+        # resize and center crop to input size
+        img = image_utils.scale_image(img, 0.55)
+        img = image_utils.center_crop(img)
+        img = image_utils.img_transform(img)
+        img = img[None, :, :, :]
+        if use_gpu:
+            img = img.cuda()
+
+        # inference
+        pred = model(img)
+
+        # up-sampling
+        pred = F.interpolate(pred, size=(466, 582), mode='bilinear', align_corners=False)
+        pred = pred.cpu().data.numpy()
 
         # load label
         label = np.load(label_path)
@@ -100,17 +104,7 @@ def compute_errors(model, use_gpu):
     
 
 def main():
-    # switching to GPU if possible
-    use_gpu = torch.cuda.is_available()
-    print('Using GPU:', use_gpu)
-
-    # loading model
-    print('\nLoading model...')
-    model = ResnetUnetHybrid.load_pretrained(use_gpu=use_gpu)
-            
-    # setting model to evaluation mode
-    model.eval()
-    compute_errors(model, use_gpu)
+    compute_errors()
   
 
 if __name__ == '__main__':
