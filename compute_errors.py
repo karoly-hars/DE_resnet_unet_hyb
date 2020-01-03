@@ -52,7 +52,7 @@ def compute_errors():
 
     print('\nRunning evaluation:')
     for idx, (img_path, label_path) in enumerate(zip(test_img_paths, test_label_paths)):
-        sys.stdout.write('\r{} / {}'.format(idx, len(test_img_paths)))
+        sys.stdout.write('\r{} / {}'.format(idx+1, len(test_img_paths)))
         sys.stdout.flush()
 
         # load image
