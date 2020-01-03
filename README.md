@@ -24,11 +24,11 @@ python3 compute_errors.py
 ```
 - Predicting the depth of an arbitrary image:
 ```sh
-python3 predict_img.py <path_to_image>
+python3 predict_img.py -i <path_to_image>
 ```
 - Predicting the depth from a video:
 ```sh
-python3 predict_vid.py <path_to_video>
+python3 predict_vid.py -i <path_to_video>
 ```
 
 ### Evalutation
