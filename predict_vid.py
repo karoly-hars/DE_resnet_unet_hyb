@@ -9,15 +9,13 @@ from network import ResnetUnetHybrid
 
 def run_vid(input_path):
     """Load, transform and inference the frames of a video. Display the predictions with the input frames."""
-    # switch to GPU if possible
-    use_gpu = torch.cuda.is_available()
-    print('Using GPU:', use_gpu)
+    # switch to CUDA device if possible
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    print('Use GPU: {}'.format(str(device) != 'cpu'))
 
     # load model
     print('Loading model...')
-    model = ResnetUnetHybrid.load_pretrained(use_gpu=use_gpu)
-
-    # setting model to evaluation mode
+    model = ResnetUnetHybrid.load_pretrained(device=device)
     model.eval()
 
     # start running the video
@@ -47,9 +45,7 @@ def run_vid(input_path):
         frame = image_utils.scale_image(frame)
         frame = image_utils.center_crop(frame)
         inp = image_utils.img_transform(frame)
-        inp = inp[None, :, :, :]
-        if use_gpu:
-            inp = inp.cuda()
+        inp = inp[None, :, :, :].to(device)
 
         # inference
         pred = model(inp)

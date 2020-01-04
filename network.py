@@ -231,18 +231,15 @@ class ResnetUnetHybrid(nn.Module):
         return x
 
     @classmethod
-    def load_pretrained(cls, load_path='hyb_net_weights.model', use_gpu=False):
+    def load_pretrained(cls, device, load_path='hyb_net_weights.model'):
         model = cls(Bottleneck, [3, 4, 6, 3])
         
         # download the weight in case they are not present
         if not os.path.exists(load_path):
             print('Downloading model weights...')
             os.system('wget https://www.dropbox.com/s/amad4ko9opi4kts/hyb_net_weights.model')
-                
-        if use_gpu:
-            model.load_state_dict(torch.load(load_path))
-            model = model.cuda()
-        else:
-            model.load_state_dict(torch.load(load_path, map_location='cpu'))
+
+        model = model.to(device)
+        model.load_state_dict(torch.load(load_path, map_location=device))
 
         return model

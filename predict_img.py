@@ -7,13 +7,13 @@ import image_utils
 
 def predict_img(img_path):
     """Inference a single image."""
-    # switch to GPU if possible
-    use_gpu = torch.cuda.is_available()
-    print('Using GPU:', use_gpu)    
+    # switch to CUDA device if possible
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    print('Use GPU: {}'.format(str(device) != 'cpu'))
     
     # load model
     print('Loading model...')
-    model = ResnetUnetHybrid.load_pretrained(use_gpu=use_gpu)
+    model = ResnetUnetHybrid.load_pretrained(device=device)
     model.eval()
         
     # load image
@@ -21,9 +21,7 @@ def predict_img(img_path):
     img = image_utils.scale_image(img)
     img = image_utils.center_crop(img)
     inp = image_utils.img_transform(img)
-    inp = inp[None, :, :, :]
-    if use_gpu:
-        inp = inp.cuda()
+    inp = inp[None, :, :, :].to(device)
 
     # inference
     print('Running the image through the network...')

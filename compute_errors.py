@@ -36,13 +36,13 @@ def collect_test_files(download_path='./NYU_depth_v2_test_set.tar.gz'):
 
 def compute_errors():
     """Download the test files, run all the test images through the model, and evaluate."""
-    # switch to GPU if possible
-    use_gpu = torch.cuda.is_available()
-    print('Using GPU:', use_gpu)
+    # switch to CUDA device if possible
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    print('Use GPU: {}'.format(str(device) != 'cpu'))
 
     # load model
-    print('\nLoading model...')
-    model = ResnetUnetHybrid.load_pretrained(use_gpu=use_gpu)
+    print('Loading model...')
+    model = ResnetUnetHybrid.load_pretrained(device=device)
     model.eval()
 
     preds = np.zeros((466, 582, 654), dtype=np.float32)
@@ -62,9 +62,7 @@ def compute_errors():
         img = image_utils.scale_image(img, 0.55)
         img = image_utils.center_crop(img)
         img = image_utils.img_transform(img)
-        img = img[None, :, :, :]
-        if use_gpu:
-            img = img.cuda()
+        img = img[None, :, :, :].to(device)
 
         # inference
         pred = model(img)
