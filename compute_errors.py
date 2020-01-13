@@ -83,27 +83,27 @@ def compute_errors():
     # calculating errors
     rel_error = np.mean(np.abs(preds - labels)/labels)
     print('\nMean Absolute Relative Error: {:.6f}'.format(rel_error))
-    
+
     rmse = np.sqrt(np.mean((preds - labels)**2))
     print('Root Mean Squared Error: {:.6f}'.format(rmse))
-    
+
     log10 = np.mean(np.abs(np.log10(preds) - np.log10(labels)))
     print('Mean Log10 Error: {:.6f}'.format(log10))
-    
+
     acc = np.maximum(preds/labels, labels/preds)
     delta1 = np.mean(acc < 1.25)
     print('Delta1: {:.6f}'.format(delta1))
-    
+
     delta2 = np.mean(acc < 1.25**2)
     print('Delta2: {:.6f}'.format(delta2))
-    
+
     delta3 = np.mean(acc < 1.25**3)
-    print('Delta3: {:.6f}'.format(delta3))    
-    
+    print('Delta3: {:.6f}'.format(delta3))
+
 
 def main():
     compute_errors()
-  
+
 
 if __name__ == '__main__':
     main()

@@ -10,12 +10,12 @@ def predict_img(img_path):
     # switch to CUDA device if possible
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print('Use GPU: {}'.format(str(device) != 'cpu'))
-    
+
     # load model
     print('Loading model...')
     model = ResnetUnetHybrid.load_pretrained(device=device)
     model.eval()
-        
+
     # load image
     img = cv2.imread(img_path)[..., ::-1]
     img = image_utils.scale_image(img)
@@ -26,11 +26,11 @@ def predict_img(img_path):
     # inference
     print('Running the image through the network...')
     output = model(inp)
-    
+
     # transform and plot the results
     output = output.cpu()[0].data.numpy()
     image_utils.show_img_and_pred(img, output)
-    
+
 
 def get_arguments():
     """Get command line arguments."""

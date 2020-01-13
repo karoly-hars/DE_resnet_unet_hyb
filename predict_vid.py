@@ -23,7 +23,7 @@ def run_vid(input_path):
     start = time.time()
     capture = cv2.VideoCapture(input_path)
     frame_cnt = 0
-    
+
     if not capture.isOpened():
         print('ERROR: Failed to open video.')
         return -1
@@ -37,7 +37,7 @@ def run_vid(input_path):
         if cv2.waitKey(1) == ord('q'):
             print('Interrupted by user.')
             break
-        
+
         frame_cnt += 1
 
         # pre-process frame
@@ -75,7 +75,7 @@ def get_arguments():
 def main():
     args = get_arguments()
     run_vid(args.input_path)
-    
+
 
 if __name__ == '__main__':
     main()

@@ -44,7 +44,7 @@ class Bottleneck(nn.Module):
         out = self.relu(out)
 
         return out
-      
+
 
 def get_incoming_shape(incoming):
     size = incoming.size()
@@ -56,13 +56,13 @@ def interleave(tensors, axis):
     # change the first element (batch_size to -1)
     old_shape = get_incoming_shape(tensors[0])[1:]
     new_shape = [-1] + old_shape
-    
+
     # double 1 dimension
     new_shape[axis] *= len(tensors)
-    
-    # pack the tensors on top of each other 
+
+    # pack the tensors on top of each other
     stacked = torch.stack(tensors, axis+1)
-    
+
     # reshape and return
     reshaped = stacked.view(new_shape)
     return reshaped
@@ -99,10 +99,10 @@ class UnpoolingAsConvolution(nn.Module):
 class UpProjection(nn.Module):
     def __init__(self, inplanes, planes):
         super(UpProjection, self).__init__()
-        
+
         self.unpool_main = UnpoolingAsConvolution(inplanes, planes)
         self.unpool_res = UnpoolingAsConvolution(inplanes, planes)
-             
+
         self.main_branch = nn.Sequential(
             self.unpool_main,
             nn.BatchNorm2d(planes),
@@ -110,27 +110,27 @@ class UpProjection(nn.Module):
             nn.Conv2d(planes, planes, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(planes)
         )
-        
+
         self.residual_branch = nn.Sequential(
             self.unpool_res,
             nn.BatchNorm2d(planes),
         )
 
-        self.relu = nn.ReLU(inplace=False)       
+        self.relu = nn.ReLU(inplace=False)
 
     def forward(self, input_data):
         x = self.main_branch(input_data)
-        res = self.residual_branch(input_data)             
-        x += res  
+        res = self.residual_branch(input_data)
+        x += res
         x = self.relu(x)
         return x
 
 
 class ConConv(nn.Module):
     def __init__(self, inplanes_x1, inplanes_x2, planes):
-        super(ConConv, self).__init__()        
+        super(ConConv, self).__init__()
         self.conv = nn.Conv2d(inplanes_x1 + inplanes_x2, planes, kernel_size=1, bias=True)
-    
+
     def forward(self, x1, x2):
         x1 = torch.cat([x2, x1], dim=1)
         x1 = self.conv(x1)
@@ -140,14 +140,14 @@ class ConConv(nn.Module):
 class ResnetUnetHybrid(nn.Module):
     def __init__(self, block, layers):
         self.inplanes = 64
-        
+
         # resnet layers
         super(ResnetUnetHybrid, self).__init__()
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-        
+
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
@@ -156,29 +156,29 @@ class ResnetUnetHybrid(nn.Module):
         # additional up projection layers parts
         self.conv2 = nn.Conv2d(2048, 1024, 1, bias=True)
         self.bn2 = nn.BatchNorm2d(1024)
-        
+
         self.up_proj1 = UpProjection(1024, 512)
         self.up_proj2 = UpProjection(512, 256)
         self.up_proj3 = UpProjection(256, 128)
         self.up_proj4 = UpProjection(128, 64)
-        
+
         self.drop = nn.Dropout(0.5, False)
         self.conv3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1, bias=True)
-        
+
         # padding + concat for unet stuff
         self.con_conv1 = ConConv(1024, 512, 512)
-        self.con_conv2 = ConConv(512, 256, 256) 
-        self.con_conv3 = ConConv(256, 128, 128) 
-        self.con_conv4 = ConConv(64, 64, 64) 
+        self.con_conv2 = ConConv(512, 256, 256)
+        self.con_conv3 = ConConv(256, 128, 128)
+        self.con_conv4 = ConConv(64, 64, 64)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.normal_(m.weight, 0, 0.01)
-                                
+
             elif isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
-                
+
     def _make_layer(self, block, planes, blocks, stride=1):
         downsample = None
         if stride != 1 or self.inplanes != planes * block.expansion:
@@ -195,45 +195,45 @@ class ResnetUnetHybrid(nn.Module):
             layers.append(block(self.inplanes, planes))
 
         return nn.Sequential(*layers)
-        
+
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1(x)
         x_to_conv4 = self.relu(x)
-        
+
         x = self.maxpool(x_to_conv4)
         x_to_conv3 = self.layer1(x)
         x_to_conv2 = self.layer2(x_to_conv3)
         x_to_conv1 = self.layer3(x_to_conv2)
         x = self.layer4(x_to_conv1)
-          
+
         # additional layers
         x = self.conv2(x)
         x = self.bn2(x)
-        
+
         # up project part
         x = self.up_proj1(x)
         x = self.con_conv1(x, x_to_conv1)
-        
+
         x = self.up_proj2(x)
         x = self.con_conv2(x, x_to_conv2)
-        
+
         x = self.up_proj3(x)
         x = self.con_conv3(x, x_to_conv3)
-        
+
         x = self.up_proj4(x)
         x = self.con_conv4(x, x_to_conv4)
-        
+
         x = self.drop(x)
         x = self.conv3(x)
         x = self.relu(x)
-        
+
         return x
 
     @classmethod
     def load_pretrained(cls, device, load_path='hyb_net_weights.model'):
         model = cls(Bottleneck, [3, 4, 6, 3])
-        
+
         # download the weight in case they are not present
         if not os.path.exists(load_path):
             print('Downloading model weights...')
