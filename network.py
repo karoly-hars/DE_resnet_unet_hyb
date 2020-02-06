@@ -234,7 +234,7 @@ class ResnetUnetHybrid(nn.Module):
     def load_pretrained(cls, device, load_path='hyb_net_weights.model'):
         model = cls(Bottleneck, [3, 4, 6, 3])
 
-        # download the weight in case they are not present
+        # download the weights if they are not present
         if not os.path.exists(load_path):
             print('Downloading model weights...')
             os.system('wget https://www.dropbox.com/s/amad4ko9opi4kts/hyb_net_weights.model')
