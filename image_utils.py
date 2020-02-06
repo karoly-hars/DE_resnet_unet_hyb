@@ -21,14 +21,14 @@ def scale_image(img, scale=None):
 
 
 def center_crop(img):
-    """Center crop and image to HEIGHT x WIDTH."""
+    """Center crop an image to HEIGHT x WIDTH."""
     corner = ((img.shape[0] - HEIGHT) // 2, (img.shape[1] - WIDTH) // 2)
     img = img[corner[0]:corner[0] + HEIGHT, corner[1]:corner[1] + WIDTH]
     return img
 
 
 def img_transform(img):
-    """Normalize and image."""
+    """Normalize an image."""
     data_transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
