@@ -68,7 +68,7 @@ def run_vid(input_path):
 def get_arguments():
     """Get command line arguments."""
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--input_path', required=True, type=str, help='Path to the input video')
+    parser.add_argument('-i', '--input_path', required=True, type=str, help='Path to the input video.')
     return parser.parse_args()
 
 
