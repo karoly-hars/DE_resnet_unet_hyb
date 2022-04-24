@@ -5,7 +5,7 @@ from network import ResnetUnetHybrid
 import image_utils
 
 
-def predict_img(img_path):
+def predict_img(img_path, output_path):
     """Inference a single image."""
     # switch to CUDA device if possible
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -29,19 +29,20 @@ def predict_img(img_path):
 
     # transform and plot the results
     output = output.cpu()[0].data.numpy()
-    image_utils.show_img_and_pred(img, output)
+    image_utils.save_img_and_pred(img, output, output_path)
 
 
 def get_arguments():
     """Get command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--img_path', required=True, type=str, help='Path to the input image.')
+    parser.add_argument('-o', '--output_path', required=True, type=str, help='Path to the output image.')
     return parser.parse_args()
 
 
 def main():
     args = get_arguments()
-    predict_img(args.img_path)
+    predict_img(args.img_path, args.output_path)
 
 
 if __name__ == '__main__':

@@ -37,8 +37,8 @@ def img_transform(img):
     return img
 
 
-def show_img_and_pred(img, depth):
-    """Plot an image and a corresponding prediction next to each other."""
+def save_img_and_pred(img, depth, save_path):
+    """Plot an image and a corresponding prediction next to each other, then save the plot."""
     plt.figure()
     plt.subplot(1, 2, 1)
     plt.imshow(img)
@@ -46,7 +46,7 @@ def show_img_and_pred(img, depth):
     plt.subplot(1, 2, 2)
     pred = np.transpose(depth, (1, 2, 0))
     plt.imshow(pred[:, :, 0])
-    plt.show()
+    plt.savefig(save_path)
 
 
 def depth_to_grayscale(depth, max_dist=10.0):
