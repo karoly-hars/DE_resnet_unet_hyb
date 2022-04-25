@@ -25,7 +25,12 @@ def run_vid(input_path, output_path):
     frame_cnt = 0
 
     # init video writer
-    vid_writer = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'XVID'), 20.0, (640, 256))
+    vid_writer = cv2.VideoWriter(
+        output_path,
+        cv2.VideoWriter_fourcc(*'XVID'),
+        20.0,
+        (image_utils.WIDTH * 2, image_utils.HEIGHT)
+    )
 
     if not capture.isOpened():
         print('ERROR: Failed to open video.')
